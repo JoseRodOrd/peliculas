@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./peliculasTemplate.xhtml">
+
+            <ui:define name="content">
+               
+
+                <p:growl id="msj" showDetail="true"/>
+
+
+                <h:form>
+                    <p:panel id="basic" header="Formulario de Creacion"  footer="Ips Horisoes" style="margin-bottom:20px; align-content: center">
+                        <h:panelGrid columns="2" cellpadding="5">
+                            <p:outputLabel for="txtTitulo" value="Titulo pelicula" />
+                            <p:inputText id="txtTitulo" value="#{peliculaBean.pelicula.titulo}" required="true" requiredMessage="El titulo de la pelicula es requerido" />
+
+                            <p:outputLabel  value="Genero" />
+                            <p:selectOneMenu value="#{peliculaBean.pelicula.genero}">
+                                <f:selectItem  itemLabel="Seleccionar.." itemValue=""/>
+                                <f:selectItem  itemLabel="Accion" itemValue="acción"/>
+                                <f:selectItem  itemLabel="Terror" itemValue="terror"/>
+                                <f:selectItem  itemLabel="Comedia" itemValue="comedia"/>
+                                <f:selectItem  itemLabel="Drama" itemValue="drama"/>                
+                            </p:selectOneMenu>
+                            <p:outputLabel  value="Tipo" />
+                            <p:selectOneMenu value="#{peliculaBean.pelicula.tipo}">
+                                <f:selectItem  itemLabel="Seleccionar.." itemValue=""/>
+                                <f:selectItem  itemLabel="pelicula" itemValue="pelicula"/>
+                                <f:selectItem  itemLabel="Serie" itemValue="Serie"/>                     
+                            </p:selectOneMenu>            
+
+                            <p:outputLabel for="calEstreno" value="Estreno" />
+                            <p:calendar id="calEstreno" value="#{peliculaBean.pelicula.estreno}" pattern="dd/MM/yyyy" />
+
+                            <p:outputLabel for="txtSinopsis" value="Sinopsis" />
+                            <p:inputText id="txtSinopsis" value="#{peliculaBean.pelicula.sinopsis}" required="true"
+                                         requiredMessage="La  sinopsis de la pelicula es requerida"/>
+
+                            <p:outputLabel for="txtImagen" value="Imagen" />
+                            <p:inputText id="txtImagen" value="#{peliculaBean.pelicula.imagen}" />
+
+                            <p:outputLabel for="txtCalificacion" value="Calificacion" />
+                            <p:inputText id="txtCalificacion" value="#{peliculaBean.pelicula.calificacion}" />
+
+                            <p:commandButton value="Crear pelicula" actionListener="#{peliculaBean.crearPelicula}" 
+                                             update=":msj">
+
+                            </p:commandButton>
+                        </h:panelGrid>
+                    </p:panel>                
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

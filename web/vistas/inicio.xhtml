@@ -1,0 +1,269 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./peliculasTemplate.xhtml">
+
+            <ui:define name="content">
+                <style type="text/css"> 
+                    /*demo*/
+                    .ui-dataview-list .ui-dataview-row {
+                        border-bottom: 1px solid #A8A8A8;
+                        padding: 25px 10px;
+                        /* with the exported variables from Nova and Luna Themes*/
+                        border-bottom-color: var(--input-border-color, #A8A8A8);
+                    }
+
+                    .logo {
+                        width: 5%;
+                    }
+                    .detail {
+                        width: 85%;
+                        padding-left: 25px;
+                    }
+                </style>
+
+                    <h1 class="mgnSeccion" align="center">Cartelera de Cine </h1>   
+                   
+
+
+                <h:form id="form">
+                    <p:dataView var="pel" value="#{peliculaBean.listPeliculas}" rows="6" paginator="true" rowsPerPageTemplate="6,12,16"
+                                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                gridIcon="ui-icon-grip-solid-vertical" listIcon="ui-icon-grip-dotted-horizontal"
+                                > 
+
+                        <p:dataViewGridItem>
+                            <p:panel header="#{pel.titulo}" style="text-align:center">
+                                <h:panelGrid columns="1" style="width:100%">
+                                    <p:graphicImage url="#{pel.imagen}"  width="70" height="120"/> 
+
+                                    <h:outputText value="Estreno" />
+                                    <h:outputText value="#{pel.estreno}" />
+
+                                    <p:commandButton icon="ui-icon-circle-zoomin" 
+                                                     action="#{peliculaBean.seleccionarPelicula(pel)}"
+                                                     update=":formDetail" oncomplete="PF('pelDialog').show()" />
+
+                                </h:panelGrid>
+                            </p:panel>
+                        </p:dataViewGridItem>
+
+                        <p:dataViewListItem>
+                            <h:panelGrid columns="3" style="width:100%" columnClasses="logo,detail">
+                                <p:graphicImage url="#{pel.imagen}"  width="70" height="120"/> 
+
+                                <p:outputPanel>
+                                    <h:panelGrid columns="2" cellpadding="5">
+                                        <h:outputText value="Titulo:" />
+                                        <h:outputText value="#{pel.titulo}" style="font-weight: bold"/>
+                                        <h:outputText value="Sinopsis" />
+                                        <h:outputText value="#{pel.sinopsis}" />
+                                        <h:outputText value="Estreno" />
+                                        <h:outputText value="#{pel.estreno}" />
+                                        <h:outputText value="Calificacion" />
+                                        <h:outputText value="#{pel.calificacion}" />
+                                    </h:panelGrid>
+                                </p:outputPanel>
+                                <h:panelGrid columns="3" cellpadding="5">
+                                    <p:commandButton icon="ui-icon-circle-zoomin" update=":formDetail" oncomplete="PF('pelDialog').show()" 
+                                                     action="#{peliculaBean.seleccionarPelicula(pel)}"
+                                                     />
+                                    <p:commandButton icon="ui-icon-pencil" 
+                                                     actionListener ="#{peliculaBean.leerEdirarPelicula(pel)}"
+                                                     oncomplete="PF('dlgEditarPel').show();"
+                                                     update=":formEditar"
+                                                     >
+
+                                    </p:commandButton >
+
+                                    <p:commandButton icon="ui-icon-trash" update="form"
+                                                     action="#{peliculaBean.eliminarPelicula(pel)}"
+                                                     >
+
+                                    </p:commandButton >
+                                </h:panelGrid>                           
+                            </h:panelGrid>
+                        </p:dataViewListItem>
+                    </p:dataView>
+
+
+                </h:form>
+
+
+                <h:form id="formDetail">
+
+                    <p:dialog header="Detalle Pelicula" widgetVar="pelDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel id="pelDetail" style="text-align:center;" >
+                            <p:panelGrid  columns="2" columnClasses="label,value"
+                                          rendered="#{not empty peliculaBean.peliculaSeleccionada}"
+                                          >
+                                <f:facet name="header">
+                                    <p:graphicImage url="#{peliculaBean.peliculaSeleccionada.imagen}"  width="70" height="120"/> 
+                                </f:facet>
+
+                                <h:outputText value="Titulo:" />
+                                <h:outputText value="#{peliculaBean.peliculaSeleccionada.titulo}" />
+
+                                
+
+                                <h:outputText value="Calificacion:" />
+                                <h:outputText value="#{peliculaBean.peliculaSeleccionada.calificacion}" style="color:#{peliculaBean.pelicula.calificacion}"/>
+
+                                <h:outputText value="Estreno" />
+                                <h:outputText value="#{peliculaBean.peliculaSeleccionada.estreno}" />
+                            </p:panelGrid>
+                        </p:outputPanel>
+                    </p:dialog>   
+                </h:form>
+
+
+                <h:form id="formCrearPel">
+                    <p:dialog header="Formulario de Creacion de Pelicula" widgetVar="dlgCrearPel" modal="true" 
+                              style="margin-top: 5%;" resizable="false" 
+                              closeOnEscape="true"  position="top">
+
+                        <h:panelGrid id="panelCrear" columns="3" cellpadding="5">
+                            <p:outputLabel for="txtTitulo" value="Titulo pelicula" />
+                            <p:inputText id="txtTitulo" 
+                                         value="#{peliculaBean.pelicula.titulo}"
+                                         required="true" 
+                                         requiredMessage="El titulo de la pelicula es requerido" />
+                            <p:message for="txtTitulo"></p:message>
+                            <p:outputLabel  value="Genero" />
+                            <p:selectOneMenu id="selectGenero" value="#{peliculaBean.pelicula.genero}">
+                                <f:selectItem  itemLabel="Seleccionar.." itemValue=""/>
+                                <f:selectItem  itemLabel="Accion" itemValue="acción"/>
+                                <f:selectItem  itemLabel="Terror" itemValue="terror"/>
+                                <f:selectItem  itemLabel="Comedia" itemValue="comedia"/>
+                                <f:selectItem  itemLabel="Drama" itemValue="drama"/>                
+                            </p:selectOneMenu>
+                            <p:messages for="selectGenero"/>
+                            <p:outputLabel  value="Tipo" />
+                            <p:selectOneMenu id="selectTipo" value="#{peliculaBean.pelicula.tipo}">
+                                <f:selectItem  itemLabel="Seleccionar.." itemValue=""/>
+                                <f:selectItem  itemLabel="pelicula" itemValue="pelicula"/>
+                                <f:selectItem  itemLabel="Serie" itemValue="Serie"/>                     
+                            </p:selectOneMenu> 
+                            <p:messages for="selectTipo"/>
+
+                            <p:outputLabel for="calEstreno" value="Estreno" />
+                            <p:calendar id="calEstreno" value="#{peliculaBean.pelicula.estreno}" 
+                                        pattern="dd/MM/yyyy" />
+                            <p:messages for="calEstreno"/>
+
+                            <p:outputLabel for="txtSinopsis" value="Sinopsis" />
+                            <p:inputText id="txtSinopsis" value="#{peliculaBean.pelicula.sinopsis}" 
+                                         required="true"
+                                         requiredMessage="La  sinopsis de la pelicula es requerida"/>
+                            <p:messages for="txtSinopsis"/>
+
+                            <p:outputLabel for="txtImagen" value="Url Imagen" />
+                            <p:inputText id="txtImagen" value="#{peliculaBean.pelicula.imagen}" />
+                            <p:messages for="txtImagen"/>
+
+                            <p:outputLabel for="txtCalificacion" value="Calificacion" />
+                            <p:inputText id="txtCalificacion" value="#{peliculaBean.pelicula.calificacion}" />
+                            <p:messages for="txtCalificacion"/>
+
+                            <p:commandButton value="Crear pelicula" 
+                                             action="#{peliculaBean.crearPelicula}"
+                                             update="formCrearPel:panelCrear :form"
+                                             oncomplete="PF('dlgCrearPel').hide();"
+                                             >
+
+                            </p:commandButton>
+
+                            <p:commandButton value="Cancelar"   oncomplete="PF('dlgCrearPel').hide();"/>
+
+
+                        </h:panelGrid>
+
+                    </p:dialog>                                  
+                </h:form>
+
+
+                <h:form id="formEditar">
+
+                    <p:dialog header="Formulario de edicion de Pelicula" widgetVar="dlgEditarPel" modal="true" 
+                              id="dlgEditar"
+                              style="margin-top: 5%;" resizable="false" 
+                              closeOnEscape="true"  position="top">
+
+                        <h:panelGrid id="panelCrear" columns="3" cellpadding="5">
+                            <p:outputLabel for="txtTitulo" value="Titulo pelicula" />
+                            <p:inputText id="txtTitulo" 
+                                         value="#{peliculaBean.pelicula.titulo}"
+                                         required="true" 
+                                         requiredMessage="El titulo de la pelicula es requerido" />
+                            <p:message for="txtTitulo"></p:message>
+                            <p:outputLabel  value="Genero" />
+                            <p:selectOneMenu id="selectGenero" value="#{peliculaBean.pelicula.genero}">
+                                <f:selectItem  itemLabel="Seleccionar.." itemValue=""/>
+                                <f:selectItem  itemLabel="Accion" itemValue="acción"/>
+                                <f:selectItem  itemLabel="Terror" itemValue="terror"/>
+                                <f:selectItem  itemLabel="Comedia" itemValue="comedia"/>
+                                <f:selectItem  itemLabel="Drama" itemValue="drama"/>                
+                            </p:selectOneMenu>
+                            <p:messages for="selectGenero"/>
+                            <p:outputLabel  value="Tipo" />
+                            <p:selectOneMenu id="selectTipo" value="#{peliculaBean.pelicula.tipo}">
+                                <f:selectItem  itemLabel="Seleccionar.." itemValue=""/>
+                                <f:selectItem  itemLabel="pelicula" itemValue="pelicula"/>
+                                <f:selectItem  itemLabel="Serie" itemValue="Serie"/>                     
+                            </p:selectOneMenu> 
+                            <p:messages for="selectTipo"/>
+
+                            <p:outputLabel for="calEstreno" value="Estreno" />
+                            <p:calendar id="calEstreno" value="#{peliculaBean.pelicula.estreno}" 
+                                        pattern="dd/MM/yyyy" />
+                            <p:messages for="calEstreno"/>
+
+                            <p:outputLabel for="txtSinopsis" value="Sinopsis" />
+                            <p:inputText id="txtSinopsis" value="#{peliculaBean.pelicula.sinopsis}" 
+                                         required="true"
+                                         requiredMessage="La  sinopsis de la pelicula es requerida"/>
+                            <p:messages for="txtSinopsis"/>
+
+                            <p:outputLabel for="txtImagen" value="Url Imagen" />
+                            <p:inputText id="txtImagen" value="#{peliculaBean.pelicula.imagen}" />
+                            <p:messages for="txtImagen"/>
+
+                            <p:outputLabel for="txtCalificacion" value="Calificacion" />
+                            <p:inputText id="txtCalificacion" value="#{peliculaBean.pelicula.calificacion}" />
+                            <p:messages for="txtCalificacion"/>
+
+                            <p:commandButton value="Editar pelicula" 
+                                             action="#{peliculaBean.editarPelicula()}"
+                                             update="formCrearPel:panelCrear :form"
+                                             oncomplete="PF('dlgEditarPel').hide();"
+                                             >
+
+                            </p:commandButton>
+
+                            <p:commandButton value="Cancelar" 
+                                             immediate="true"
+                                             oncomplete="PF('dlgEditarPel').hide();"
+                                             >
+
+                            </p:commandButton>
+
+
+                        </h:panelGrid>
+
+                    </p:dialog>                                  
+
+
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
