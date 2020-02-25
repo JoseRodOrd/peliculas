@@ -1,4 +1,4 @@
-# peliculas
+# Peliculas
 
 
 PROYECTO PELICULAS
